@@ -7,63 +7,64 @@ dotenv.config();
 
 const app = express();
 
+// ====== Configuración CORS ======
+// Permitimos solo tu frontend en producción y localhost en desarrollo
 const allowedOrigins = [
   'http://localhost:5173', // desarrollo local
-  'https://calculator-frontend-ten.vercel.app' // producción en Vercel
+  'https://calculator-frontend-ten.vercel.app' // producción Vercel
 ];
 
-// ✅ Configuración CORS con manejo de preflight
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS not allowed'));
+    // Permitir requests sin origen (como Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     }
+    return callback(new Error('No permitido por CORS'));
   },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  credentials: true
 }));
 
 app.use(express.json());
 
-// ✅ Responder manualmente OPTIONS para todas las rutas
-app.options('*', cors({
-  origin: allowedOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
+// ====== Variables de entorno ======
 const PORT = process.env.PORT || 8080;
+const AUTH_SERVICE = process.env.AUTH_SERVICE;
+const OPERATION_SERVICE = process.env.OPERATION_SERVICE;
+const RECORD_SERVICE = process.env.RECORD_SERVICE;
+const BALANCE_SERVICE = process.env.BALANCE_SERVICE;
 
-// 🔹 Proxy Routes
+// ====== Rutas del Gateway ======
 app.use('/api/v1/auth', createProxyMiddleware({
-  target: process.env.AUTH_SERVICE,
-  changeOrigin: true
+  target: AUTH_SERVICE,
+  changeOrigin: true,
+  pathRewrite: { '^/api/v1/auth': '' }
 }));
 
 app.use('/api/v1/operations', createProxyMiddleware({
-  target: process.env.OPERATION_SERVICE,
-  changeOrigin: true
+  target: OPERATION_SERVICE,
+  changeOrigin: true,
+  pathRewrite: { '^/api/v1/operations': '' }
 }));
 
 app.use('/api/v1/records', createProxyMiddleware({
-  target: process.env.RECORD_SERVICE,
-  changeOrigin: true
+  target: RECORD_SERVICE,
+  changeOrigin: true,
+  pathRewrite: { '^/api/v1/records': '' }
 }));
 
 app.use('/api/v1/balance', createProxyMiddleware({
-  target: process.env.BALANCE_SERVICE,
-  changeOrigin: true
+  target: BALANCE_SERVICE,
+  changeOrigin: true,
+  pathRewrite: { '^/api/v1/balance': '' }
 }));
 
-// Ruta base
+// Ruta base para pruebas
 app.get('/', (req, res) => {
-  res.send('API Gateway funcionando');
+  res.send('✅ API Gateway funcionando');
 });
 
 app.listen(PORT, () => {
-  console.log(`API Gateway escuchando en http://localhost:${PORT}`);
+  console.log(`🚀 API Gateway escuchando en http://localhost:${PORT}`);
 });
