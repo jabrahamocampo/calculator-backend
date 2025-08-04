@@ -6,10 +6,10 @@ dotenv.config();
 
 const app = express();
 
-// ====== Configuración CORS centralizada ======
+// ====== Configuración CORS ======
 const allowedOrigins = [
-  'http://localhost:5173', // Frontend en desarrollo
-  'https://calculator-frontend-ten.vercel.app' // Frontend en producción
+  'http://localhost:5173',
+  'https://calculator-frontend-ten.vercel.app'
 ];
 
 app.use((req, res, next) => {
@@ -22,41 +22,35 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Credentials', 'true');
 
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(200); // Responde rápido a preflight
+    return res.sendStatus(200);
   }
   next();
 });
 
 app.use(express.json());
 
-// ====== Variables de entorno ======
 const PORT = process.env.PORT || 8080;
-const AUTH_SERVICE = process.env.AUTH_SERVICE;
-const OPERATION_SERVICE = process.env.OPERATION_SERVICE;
-const RECORD_SERVICE = process.env.RECORD_SERVICE;
-const BALANCE_SERVICE = process.env.BALANCE_SERVICE;
 
 // ====== Proxies ======
 app.use('/api/v1/auth', createProxyMiddleware({
-  target: AUTH_SERVICE,
-  changeOrigin: true,
-  pathRewrite: { '^/api/v1/auth': '' }
+  target: process.env.AUTH_SERVICE,
+  changeOrigin: true
 }));
 
 app.use('/api/v1/operations', createProxyMiddleware({
-  target: OPERATION_SERVICE,
+  target: process.env.OPERATION_SERVICE,
   changeOrigin: true,
   pathRewrite: { '^/api/v1/operations': '' }
 }));
 
 app.use('/api/v1/records', createProxyMiddleware({
-  target: RECORD_SERVICE,
+  target: process.env.RECORD_SERVICE,
   changeOrigin: true,
   pathRewrite: { '^/api/v1/records': '' }
 }));
 
 app.use('/api/v1/balance', createProxyMiddleware({
-  target: BALANCE_SERVICE,
+  target: process.env.BALANCE_SERVICE,
   changeOrigin: true,
   pathRewrite: { '^/api/v1/balance': '' }
 }));
