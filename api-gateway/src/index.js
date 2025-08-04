@@ -7,24 +7,26 @@ dotenv.config();
 
 const app = express();
 
-// ====== Configuración CORS ======
-// Permitimos solo tu frontend en producción y localhost en desarrollo
+// ====== Configuración CORS global ======
 const allowedOrigins = [
-  'http://localhost:5173', // desarrollo local
+  'http://localhost:5173', // desarrollo
   'https://calculator-frontend-ten.vercel.app' // producción Vercel
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // Permitir requests sin origen (como Postman)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error('No permitido por CORS'));
-  },
-  credentials: true
-}));
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200); // Responde rápido a preflight
+  }
+  next();
+});
 
 app.use(express.json());
 
@@ -35,7 +37,7 @@ const OPERATION_SERVICE = process.env.OPERATION_SERVICE;
 const RECORD_SERVICE = process.env.RECORD_SERVICE;
 const BALANCE_SERVICE = process.env.BALANCE_SERVICE;
 
-// ====== Rutas del Gateway ======
+// ====== Proxies ======
 app.use('/api/v1/auth', createProxyMiddleware({
   target: AUTH_SERVICE,
   changeOrigin: true,
@@ -60,11 +62,11 @@ app.use('/api/v1/balance', createProxyMiddleware({
   pathRewrite: { '^/api/v1/balance': '' }
 }));
 
-// Ruta base para pruebas
+// Ruta base
 app.get('/', (req, res) => {
-  res.send('✅ API Gateway funcionando');
+  res.send('API Gateway funcionando');
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 API Gateway escuchando en http://localhost:${PORT}`);
+  console.log(`API Gateway escuchando en http://localhost:${PORT}`);
 });
