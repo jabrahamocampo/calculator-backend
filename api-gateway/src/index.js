@@ -8,10 +8,11 @@ dotenv.config();
 const app = express();
 
 const allowedOrigins = [
-  'http://localhost:5173', // para desarrollo local
-  'https://calculator-frontend-ten.vercel.app' // tu frontend en producción
+  'http://localhost:5173', // desarrollo local
+  'https://calculator-frontend-ten.vercel.app' // producción en Vercel
 ];
 
+// ✅ Configuración CORS con manejo de preflight
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -20,14 +21,24 @@ app.use(cors({
       callback(new Error('CORS not allowed'));
     }
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
 
+// ✅ Responder manualmente OPTIONS para todas las rutas
+app.options('*', cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 const PORT = process.env.PORT || 8080;
 
-//Proxy Routes
+// 🔹 Proxy Routes
 app.use('/api/v1/auth', createProxyMiddleware({
   target: process.env.AUTH_SERVICE,
   changeOrigin: true
