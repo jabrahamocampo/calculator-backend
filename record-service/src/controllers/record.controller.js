@@ -39,7 +39,7 @@ export async function handleGetUserRecords(req, res) {
     search = '',
     orderBy = 'createdAt',
     order = 'desc'
-  } = req.quer;
+  } = req.query;
   
   try {
     const result = await getUserRecords({
