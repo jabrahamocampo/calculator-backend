@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node src/index.js",
     "dev": "nodemon --experimental-specifier-resolution=node src/index.js",
     "test": "jest --detectOpenHandles --forceExit"
   },
