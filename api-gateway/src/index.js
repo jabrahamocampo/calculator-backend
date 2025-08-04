@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
@@ -7,10 +6,10 @@ dotenv.config();
 
 const app = express();
 
-// ====== Configuración CORS global ======
+// ====== Configuración CORS centralizada ======
 const allowedOrigins = [
-  'http://localhost:5173', // desarrollo
-  'https://calculator-frontend-ten.vercel.app' // producción Vercel
+  'http://localhost:5173', // Frontend en desarrollo
+  'https://calculator-frontend-ten.vercel.app' // Frontend en producción
 ];
 
 app.use((req, res, next) => {
@@ -64,9 +63,9 @@ app.use('/api/v1/balance', createProxyMiddleware({
 
 // Ruta base
 app.get('/', (req, res) => {
-  res.send('API Gateway funcionando');
+  res.send('✅ API Gateway funcionando');
 });
 
 app.listen(PORT, () => {
-  console.log(`API Gateway escuchando en http://localhost:${PORT}`);
+  console.log(`🚀 API Gateway escuchando en http://localhost:${PORT}`);
 });
