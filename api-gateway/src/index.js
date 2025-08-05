@@ -22,22 +22,29 @@ app.use((req, res, next) => {
   next();
 });
 
-// ====== Body parser ======
+// ====== Body parser antes de proxys ======
 app.use(express.json());
 
 // ====== Variables de entorno ======
 const PORT = process.env.PORT || 8080;
-const AUTH_SERVICE = process.env.AUTH_SERVICE;
+const AUTH_SERVICE = process.env.AUTH_SERVICE; // ⚠️ Aquí debe ir la Internal URL de Render
 const OPERATION_SERVICE = process.env.OPERATION_SERVICE;
 const RECORD_SERVICE = process.env.RECORD_SERVICE;
 const BALANCE_SERVICE = process.env.BALANCE_SERVICE;
 
 console.log("🌍 AUTH_SERVICE =", AUTH_SERVICE);
 
-// ====== Proxy con logs y manejo de errores ======
+// ====== Debug global de todas las peticiones ======
+app.use((req, res, next) => {
+  console.log(`📥 [Gateway] ${req.method} ${req.originalUrl}`);
+  next();
+});
+
+// ====== Proxy con logs y manejo de errores para Auth Service ======
 app.use('/api/v1/auth', createProxyMiddleware({
   target: AUTH_SERVICE,
   changeOrigin: true,
+  pathRewrite: { '^/api/v1/auth': '/api/v1/auth' }, // 🔹 Mantener prefijo
   onProxyReq: (proxyReq, req) => {
     console.log(`🚀 [Gateway -> Auth Service] ${req.method} ${req.originalUrl} -> ${AUTH_SERVICE}${req.originalUrl}`);
     console.log(`🔹 Headers enviados:`, req.headers);
@@ -52,7 +59,7 @@ app.use('/api/v1/auth', createProxyMiddleware({
   },
   onError: (err, req, res) => {
     console.error(`❌ Error en el proxy hacia Auth Service:`, err.message);
-    res.status(500).send('Error en el API Gateway');
+    res.status(500).json({ error: 'Error en el API Gateway', details: err.message });
   }
 }));
 
