@@ -10,10 +10,7 @@ const allowedOrigins = [
   'http://localhost:5173',
   'https://calculator-frontend-ten.vercel.app'
 ];
-
 app.use((req, res, next) => {
-   console.log("📥 Llega al API Gateway:", req.method, req.url);
-  
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
@@ -25,6 +22,7 @@ app.use((req, res, next) => {
   next();
 });
 
+// ====== Body parser antes de proxys ======
 app.use(express.json());
 
 // ====== Variables de entorno ======
@@ -34,7 +32,9 @@ const OPERATION_SERVICE = process.env.OPERATION_SERVICE;
 const RECORD_SERVICE = process.env.RECORD_SERVICE;
 const BALANCE_SERVICE = process.env.BALANCE_SERVICE;
 
-// ====== Proxy para Auth Service (sin pathRewrite) ======
+console.log("🌍 AUTH_SERVICE =", AUTH_SERVICE);
+
+// ====== Proxy con logs ======
 app.use('/api/v1/auth', createProxyMiddleware({
   target: AUTH_SERVICE,
   changeOrigin: true,
