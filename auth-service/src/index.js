@@ -3,22 +3,23 @@ import sequelize from './config/database.js';
 import app from './app.js';
 
 dotenv.config();
+
+// ⚠️ En Render, siempre usar el puerto dinámico
 const PORT = process.env.PORT || 4000;
 
-// Test DB connection and start the server
 async function startServer() {
   try {
     await sequelize.authenticate();
-    console.log('Connection to the database established successfully.');
+    console.log('✅ Conexión a la base de datos establecida con éxito.');
 
     await sequelize.sync({ alter: true });
-    console.log('Models synchronized with the database.');
+    console.log('🔄 Modelos sincronizados con la base de datos.');
 
     app.listen(PORT, () => {
-      console.log(`Auth Service listening on http://localhost:${PORT}`);
+      console.log(`🚀 Auth Service escuchando en http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('Could not connect to the database:', error);
+    console.error('❌ No se pudo conectar a la base de datos:', error);
     process.exit(1);
   }
 }
