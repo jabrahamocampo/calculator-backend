@@ -5,7 +5,11 @@ import app from './app.js';
 dotenv.config();
 
 // ⚠️ En Render, siempre usar el puerto dinámico
-const PORT = process.env.PORT || 4000;
+//const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 10000
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Example app listening on port ${PORT}`)
+})
 
 async function startServer() {
   try {
