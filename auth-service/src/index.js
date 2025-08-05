@@ -9,7 +9,7 @@ const FRONTEND_URL = 'https://calculator-backend-api-gateway.onrender.com' || 'h
 
 // Set CORS headers to allow requests from the frontend
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', FRONTEND_URL):
+  res.setHeader('Access-Control-Allow-Origin', FRONTEND_URL);
   next()
 })
 
