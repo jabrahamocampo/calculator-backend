@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// ====== Body parser antes de proxys ======
+// ====== Body parser ======
 app.use(express.json());
 
 // ====== Variables de entorno ======
@@ -34,7 +34,7 @@ const BALANCE_SERVICE = process.env.BALANCE_SERVICE;
 
 console.log("🌍 AUTH_SERVICE =", AUTH_SERVICE);
 
-// ====== Proxy con logs ======
+// ====== Proxy con logs y manejo de errores ======
 app.use('/api/v1/auth', createProxyMiddleware({
   target: AUTH_SERVICE,
   changeOrigin: true,
@@ -42,12 +42,17 @@ app.use('/api/v1/auth', createProxyMiddleware({
     console.log(`🚀 [Gateway -> Auth Service] ${req.method} ${req.originalUrl} -> ${AUTH_SERVICE}${req.originalUrl}`);
     console.log(`🔹 Headers enviados:`, req.headers);
     console.log(`🔹 Body enviado:`, req.body);
+
     if (req.body && Object.keys(req.body).length) {
       const bodyData = JSON.stringify(req.body);
       proxyReq.setHeader('Content-Type', 'application/json');
       proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
       proxyReq.write(bodyData);
     }
+  },
+  onError: (err, req, res) => {
+    console.error(`❌ Error en el proxy hacia Auth Service:`, err.message);
+    res.status(500).send('Error en el API Gateway');
   }
 }));
 
