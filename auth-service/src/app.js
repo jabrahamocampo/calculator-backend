@@ -16,8 +16,8 @@ app.use((req, res, next) => {
 });
 
 // Rutas
-//app.use('/', authRoutes);
-app.use('/api/v1/auth', authRoutes);
+app.use('/', authRoutes);
+//app.use('/api/v1/auth', authRoutes);
 
 // Ruta base
 app.get('/', (req, res) => {
