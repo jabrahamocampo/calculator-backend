@@ -27,7 +27,7 @@ app.use(express.json());
 
 // ====== Variables de entorno ======
 //const PORT = process.env.PORT || 8080;
-const port = process.env.PORT || 10000
+const PORT = process.env.PORT || 10000
 app.listen(port, '0.0.0.0', () => {
   console.log(`Example app listening on port ${port}`)
 })
