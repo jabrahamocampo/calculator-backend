@@ -34,7 +34,8 @@ const PORT = process.env.PORT || 8080;
 // ====== Proxies ======
 app.use('/api/v1/auth', createProxyMiddleware({
   target: process.env.AUTH_SERVICE,
-  changeOrigin: true
+  changeOrigin: true,
+  pathRewrite: { '^/api/v1/auth': '' } // Quita el prefijo antes de enviar al microservicio
 }));
 
 app.use('/api/v1/operations', createProxyMiddleware({
