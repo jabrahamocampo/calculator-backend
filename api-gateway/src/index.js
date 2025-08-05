@@ -41,6 +41,7 @@ console.log("BALANCE_SERVICE =", BALANCE_SERVICE);
 app.use('/api/v1/auth', createProxyMiddleware({
   target: AUTH_SERVICE,
   changeOrigin: true,
+  pathRewrite: { '^/api/v1/auth': '' }, // <---- IMPORTANTE
   onProxyReq: (proxyReq, req) => {
     console.log(`🚀 [Gateway -> Auth Service] ${req.method} ${req.originalUrl} -> ${AUTH_SERVICE}${req.originalUrl}`);
     console.log(`🔹 Headers enviados:`, req.headers);
