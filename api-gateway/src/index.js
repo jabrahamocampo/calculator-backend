@@ -22,7 +22,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// ====== Asegurar que el body se lee ANTES de los proxys ======
 app.use(express.json());
 
 // ====== Variables de entorno ======
@@ -32,13 +31,12 @@ const OPERATION_SERVICE = process.env.OPERATION_SERVICE;
 const RECORD_SERVICE = process.env.RECORD_SERVICE;
 const BALANCE_SERVICE = process.env.BALANCE_SERVICE;
 
-// ====== Proxy con logs para Auth Service ======
+// ====== Proxy para Auth Service (sin pathRewrite) ======
 app.use('/api/v1/auth', createProxyMiddleware({
   target: AUTH_SERVICE,
   changeOrigin: true,
-  pathRewrite: { '^/api/v1/auth': '' },
   onProxyReq: (proxyReq, req) => {
-    console.log(`🚀 [Gateway -> Auth Service] ${req.method} ${req.originalUrl} -> ${AUTH_SERVICE}${req.originalUrl.replace(/^\/api\/v1\/auth/, '')}`);
+    console.log(`🚀 [Gateway -> Auth Service] ${req.method} ${req.originalUrl} -> ${AUTH_SERVICE}${req.originalUrl}`);
     console.log(`🔹 Headers enviados:`, req.headers);
     console.log(`🔹 Body enviado:`, req.body);
     if (req.body && Object.keys(req.body).length) {
@@ -53,18 +51,15 @@ app.use('/api/v1/auth', createProxyMiddleware({
 // ====== Otros proxys ======
 app.use('/api/v1/operations', createProxyMiddleware({
   target: OPERATION_SERVICE,
-  changeOrigin: true,
-  pathRewrite: { '^/api/v1/operations': '' }
+  changeOrigin: true
 }));
 app.use('/api/v1/records', createProxyMiddleware({
   target: RECORD_SERVICE,
-  changeOrigin: true,
-  pathRewrite: { '^/api/v1/records': '' }
+  changeOrigin: true
 }));
 app.use('/api/v1/balance', createProxyMiddleware({
   target: BALANCE_SERVICE,
-  changeOrigin: true,
-  pathRewrite: { '^/api/v1/balance': '' }
+  changeOrigin: true
 }));
 
 // ====== Ruta base ======
