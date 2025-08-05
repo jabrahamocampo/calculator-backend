@@ -5,7 +5,7 @@ import app from './app.js';
 dotenv.config();
 
 // Use FRONTEND_URL if set, otherwise default to localhost
-const FRONTEND_URL = 'https://calculator-backend-api-gateway.onrender.com' || 'http://localhost:10000'
+const FRONTEND_URL = 'https://calculator-backend-api-gateway.onrender.com' || 'http://localhost:10000';
 
 // Set CORS headers to allow requests from the frontend
 app.use((req, res, next) => {
