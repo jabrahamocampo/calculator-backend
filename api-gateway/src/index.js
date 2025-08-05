@@ -48,13 +48,10 @@ app.use('/api/v1/auth', createProxyMiddleware({
   changeOrigin: true,
   pathRewrite: { '^/api/v1/auth': '' },
   onProxyReq: (proxyReq, req) => {
-    console.log(`🚀 [Gateway -> Auth Service] Reenviando a: ${AUTH_SERVICE}${req.url}`);
-  },
-  onError: (err, req, res) => {
-    console.error(`❌ Error en proxy hacia Auth Service:`, err.message);
-    res.status(500).send('Error en Gateway -> Auth Service');
+    console.log(`🚀 [Gateway -> Auth Service] ${req.method} ${req.originalUrl} -> ${AUTH_SERVICE}${req.originalUrl.replace(/^\/api\/v1\/auth/, '')}`);
   }
 }));
+
 
 // ====== Otros microservicios ======
 app.use('/api/v1/operations', createProxyMiddleware({
