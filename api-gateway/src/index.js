@@ -47,6 +47,27 @@ app.use((req, res, next) => {
 
 // ====== Proxy con logs y manejo de errores para Auth Service ======
 app.use('/api/v1/auth', createProxyMiddleware({
+  target: process.env.AUTH_SERVICE,
+  changeOrigin: true,
+  pathRewrite: { '^/api/v1/auth': '/api/v1/auth' },
+  timeout: 30000, // 30 segundos
+  proxyTimeout: 30000,
+  onProxyReq: (proxyReq, req) => {
+    console.log(`🚀 Proxy: ${req.method} ${req.url} -> ${process.env.AUTH_SERVICE}`);
+    
+    if (req.body && Object.keys(req.body).length) {
+      const bodyData = JSON.stringify(req.body);
+      proxyReq.setHeader('Content-Type', 'application/json');
+      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+      proxyReq.write(bodyData);
+    }
+  },
+  onError: (err, req, res) => {
+    console.error(`❌ Proxy error:`, err.message);
+    res.status(504).json({ error: 'Gateway timeout', service: 'auth' });
+  }
+}));
+/*app.use('/api/v1/auth', createProxyMiddleware({
   target: AUTH_SERVICE,
   changeOrigin: true,
   pathRewrite: { '^/api/v1/auth': '/api/v1/auth' }, // 🔹 Mantener prefijo
@@ -66,7 +87,7 @@ app.use('/api/v1/auth', createProxyMiddleware({
     console.error(`❌ Error en el proxy hacia Auth Service:`, err.message);
     res.status(500).json({ error: 'Error en el API Gateway', details: err.message });
   }
-}));
+}));*/
 
 // ====== Otros proxys ======
 app.use('/api/v1/operations', createProxyMiddleware({
