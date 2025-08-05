@@ -28,8 +28,8 @@ app.use(express.json());
 // ====== Variables de entorno ======
 //const PORT = process.env.PORT || 8080;
 const PORT = process.env.PORT || 10000
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Example app listening on port ${port}`)
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Example app listening on port ${PORT}`)
 })
 
 const AUTH_SERVICE = process.env.AUTH_SERVICE; // ⚠️ Aquí debe ir la Internal URL de Render
