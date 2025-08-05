@@ -37,7 +37,31 @@ console.log("OPERATION_SERVICE =", OPERATION_SERVICE);
 console.log("RECORD_SERVICE =", RECORD_SERVICE);
 console.log("BALANCE_SERVICE =", BALANCE_SERVICE);
 
+
+// ====== Función auxiliar para requests internos ======
+async function forwardRequest(serviceUrl, method, path, req, res) {
+  try {
+    console.log(`🚀 API Gateway -> ${serviceUrl}${path}`);
+    const response = await axios({
+      method,
+      url: `${serviceUrl}${path}`,
+      data: req.body,
+      params: req.query,
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.status(response.status).json(response.data);
+  } catch (err) {
+    console.error(`❌ Error comunicando con ${serviceUrl}:`, err.message);
+    res.status(err.response?.status || 500).json(err.response?.data || { error: 'Error en API Gateway' });
+  }
+}
+
 // ====== Proxy con logs ======
+// ====== Rutas Auth Service ======
+app.post('/api/v1/auth/register', (req, res) => forwardRequest(AUTH_SERVICE, 'post', '/register', req, res));
+app.post('/api/v1/auth/login', (req, res) => forwardRequest(AUTH_SERVICE, 'post', '/login', req, res));
+
+/*
 app.use('/api/v1/auth', createProxyMiddleware({
   target: AUTH_SERVICE,
   changeOrigin: true,
@@ -59,6 +83,7 @@ app.use('/api/v1/auth', createProxyMiddleware({
     res.status(500).send('Error en el API Gateway');
   }
 }));
+*/
 
 // ====== Otros proxys ======
 app.use('/api/v1/operations', createProxyMiddleware({
