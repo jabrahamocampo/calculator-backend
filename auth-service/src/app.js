@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 // Rutas con prefijo unificado
-app.use('/api/v1/auth', authRoutes);
+app.use('/', authRoutes);
 
 app.get('/', (req, res) => {
   res.send('Auth Service is running');
