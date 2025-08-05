@@ -3,10 +3,8 @@ import dotenv from 'dotenv';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
 dotenv.config();
-
 const app = express();
 
-// ====== Configuración CORS ======
 const allowedOrigins = [
   'http://localhost:5173',
   'https://calculator-frontend-ten.vercel.app'
@@ -29,29 +27,50 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
+// ====== Variables ======
 const PORT = process.env.PORT || 8080;
+const AUTH_SERVICE = process.env.AUTH_SERVICE;
+const OPERATION_SERVICE = process.env.OPERATION_SERVICE;
+const RECORD_SERVICE = process.env.RECORD_SERVICE;
+const BALANCE_SERVICE = process.env.BALANCE_SERVICE;
 
-// ====== Proxies ======
+// ====== Logs globales ======
+app.use((req, res, next) => {
+  console.log(`🌐 [API Gateway] ${req.method} ${req.originalUrl}`);
+  console.log(`🔹 Headers:`, req.headers);
+  console.log(`🔹 Body:`, req.body);
+  next();
+});
+
+// ====== Proxy Auth Service con logs ======
 app.use('/api/v1/auth', createProxyMiddleware({
-  target: process.env.AUTH_SERVICE,
+  target: AUTH_SERVICE,
   changeOrigin: true,
-  pathRewrite: { '^/api/v1/auth': '' } // Quita el prefijo antes de enviar al microservicio
+  pathRewrite: { '^/api/v1/auth': '' },
+  onProxyReq: (proxyReq, req) => {
+    console.log(`🚀 [Gateway -> Auth Service] Reenviando a: ${AUTH_SERVICE}${req.url}`);
+  },
+  onError: (err, req, res) => {
+    console.error(`❌ Error en proxy hacia Auth Service:`, err.message);
+    res.status(500).send('Error en Gateway -> Auth Service');
+  }
 }));
 
+// ====== Otros microservicios ======
 app.use('/api/v1/operations', createProxyMiddleware({
-  target: process.env.OPERATION_SERVICE,
+  target: OPERATION_SERVICE,
   changeOrigin: true,
   pathRewrite: { '^/api/v1/operations': '' }
 }));
 
 app.use('/api/v1/records', createProxyMiddleware({
-  target: process.env.RECORD_SERVICE,
+  target: RECORD_SERVICE,
   changeOrigin: true,
   pathRewrite: { '^/api/v1/records': '' }
 }));
 
 app.use('/api/v1/balance', createProxyMiddleware({
-  target: process.env.BALANCE_SERVICE,
+  target: BALANCE_SERVICE,
   changeOrigin: true,
   pathRewrite: { '^/api/v1/balance': '' }
 }));
