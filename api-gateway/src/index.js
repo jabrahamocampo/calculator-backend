@@ -10,7 +10,15 @@ const allowedOrigins = [
   'http://localhost:5173',
   'https://calculator-frontend-ten.vercel.app'
 ];
+
 app.use((req, res, next) => {
+  console.log("📥 Llega al API Gateway:", req.method, req.url);
+  next();
+});
+
+app.use((req, res, next) => {
+   console.log("📥 Llega al API Gateway:", req.method, req.url, req.headers.origin);
+  
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
