@@ -27,12 +27,16 @@ console.log("   BALANCE_SERVICE =", BALANCE_SERVICE);
 async function forwardRequest(serviceUrl, method, path, req, res) {
   try {
     console.log(`🚀 API Gateway -> ${serviceUrl}${path}`);
+    const authHeader = req.headers['authorization'];
     const response = await axios({
       method,
       url: `${serviceUrl}${path}`,
       data: req.body,
       params: req.query,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': authHeader 
+      }
     });
     res.status(response.status).json(response.data);
   } catch (err) {
