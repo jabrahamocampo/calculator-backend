@@ -1,8 +1,11 @@
 import Operation from '../models/Operation.js';
+import dotenv from 'dotenv';
 import axios from 'axios';
 
-const RECORD_SERVICE_URL = 'http://localhost:4002';
-const BALANCE_SERVICE_URL = 'http://localhost:4003';
+dotenv.config();
+
+const RECORD_SERVICE = process.env.RECORD_SERVICE;
+const BALANCE_SERVICE = process.env.BALANCE_SERVICE;
 
 export async function listOperations() {
   return await Operation.findAll({ attributes: ['type', 'cost'] });
@@ -14,7 +17,7 @@ export async function executeOperation(type, operands, userId, token) {
     throw new Error('Invalid Operation');
   }
   const cost = operation.cost;
-  const balanceRes = await axios.get(`${BALANCE_SERVICE_URL}/${userId}`, {
+  const balanceRes = await axios.get(`${BALANCE_SERVICE}/${userId}`, {
     headers: {
       Authorization: token
     }
@@ -60,7 +63,7 @@ export async function executeOperation(type, operands, userId, token) {
       throw new Error('Operation not supported');
   }
 
-  await axios.post(`${RECORD_SERVICE_URL}/`, {
+  await axios.post(`${RECORD_SERVICE}/`, {
     operation_type: type,
     amount: cost,
     user_balance: newBalance,
@@ -72,7 +75,7 @@ export async function executeOperation(type, operands, userId, token) {
     }
   });
 
-  await axios.put(`${BALANCE_SERVICE_URL}/${userId}`, {
+  await axios.put(`${BALANCE_SERVICE}/${userId}`, {
     balance: newBalance
   }, {
     headers: {
