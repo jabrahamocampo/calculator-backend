@@ -46,7 +46,7 @@ app.post('/api/v1/auth/register', (req, res) => forwardRequest(AUTH_SERVICE, 'po
 app.post('/api/v1/auth/login', (req, res) => forwardRequest(AUTH_SERVICE, 'post', '/login', req, res));
 
 // ====== Rutas Operations Service ======
-app.get('/api/v1/operations', (req, res) => forwardRequest(OPERATION_SERVICE, 'get', '/list', req, res));
+app.get('/api/v1/operations/list', (req, res) => forwardRequest(OPERATION_SERVICE, 'get', '/list', req, res));
 /*app.post('/api/v1/operations', (req, res) => forwardRequest(OPERATION_SERVICE, 'post', '/execute', req, res));
 
 // ====== Rutas Records Service ======
