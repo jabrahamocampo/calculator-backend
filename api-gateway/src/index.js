@@ -46,16 +46,19 @@ app.post('/api/v1/auth/register', (req, res) => forwardRequest(AUTH_SERVICE, 'po
 app.post('/api/v1/auth/login', (req, res) => forwardRequest(AUTH_SERVICE, 'post', '/login', req, res));
 
 // ====== Rutas Operations Service ======
-app.get('/api/v1/operations', (req, res) => forwardRequest(OPERATION_SERVICE, 'get', '/operations', req, res));
+app.get('/api/v1/operations', (req, res) => forwardRequest(OPERATION_SERVICE, 'get', '/list', req, res));
+app.post('/api/v1/operations', (req, res) => forwardRequest(OPERATION_SERVICE, 'post', '/execute', req, res));
 
 // ====== Rutas Records Service ======
-app.get('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'get', '/records', req, res));
-app.post('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'post', '/records', req, res));
-app.delete('/api/v1/records/:id', (req, res) => forwardRequest(RECORD_SERVICE, 'delete', `/records/${req.params.id}`, req, res));
+app.get('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'get', '/', req, res));  //router.get('/', authenticate, handleGetUserRecords);
+app.post('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'post', '/', req, res)); //router.post('/', authenticate, handleNewRecord); // POST /api/v1/records
+app.delete('/api/v1/records/:id', (req, res) => forwardRequest(RECORD_SERVICE, 'delete', `/${req.params.id}`, req, res));  //router.delete('/:recordId', authenticate, handleSoftDelete);
+app.get('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'get', '/export', req, res)); //router.get('/export', authenticate, handleExportRecords);
 
 // ====== Rutas Balance Service ======
-app.get('/api/v1/balance/:userId', (req, res) => forwardRequest(BALANCE_SERVICE, 'get', `/balance/${req.params.userId}`, req, res));
-app.post('/api/v1/balance/update', (req, res) => forwardRequest(BALANCE_SERVICE, 'post', '/balance/update', req, res));
+app.get('/api/v1/balance/:userId', (req, res) => forwardRequest(BALANCE_SERVICE, 'get', `/${req.params.userId}`, req, res)); //router.get('/:userId', authenticate, handleGetBalance); GET  /api/v1/balance/:userId
+app.post('/api/v1/balance/', (req, res) => forwardRequest(BALANCE_SERVICE, 'post', '/', req, res)); //router.post('/', handleCreateBalance);  POST /api/v1/balance
+app.put('/api/v1/balance/', (req, res) => forwardRequest(BALANCE_SERVICE, 'put', `/${req.params.userId}`, req, res)); //router.put('/:userId', authenticate, handleUpdateBalance); PUT  /api/v1/balance/:userId
 
 // ====== Ruta base ======
 app.get('/', (req, res) => {
