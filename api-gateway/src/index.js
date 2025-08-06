@@ -57,7 +57,11 @@ app.post('/api/v1/operations/execute', (req, res) => forwardRequest(OPERATION_SE
 app.get('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'get', '/', req, res));  //router.get('/', authenticate, handleGetUserRecords);
 app.post('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'post', '/', req, res)); //router.post('/', authenticate, handleNewRecord); // POST /api/v1/records
 app.delete('/api/v1/records/:id', (req, res) => forwardRequest(RECORD_SERVICE, 'delete', `/${req.params.id}`, req, res));  //router.delete('/:recordId', authenticate, handleSoftDelete);
-app.get('/api/v1/records/export', (req, res) => forwardRequest(RECORD_SERVICE, 'get', '/export', req, res)); //router.get('/export', authenticate, handleExportRecords);
+app.get('/api/v1/records/export', (req, res) => {
+  console.log("🔍 Verificando RECORD_SERVICE:", RECORD_SERVICE);
+  console.log("📦 Petición recibida en /api/v1/records/export");
+  forwardRequest(RECORD_SERVICE, 'get', '/export', req, res)); //router.get('/export', authenticate, handleExportRecords);
+});  
 
 // ====== Rutas Balance Service ======
 app.get('/api/v1/balance/:userId', (req, res) => forwardRequest(BALANCE_SERVICE, 'get', `/${req.params.userId}`, req, res)); //router.get('/:userId', authenticate, handleGetBalance); GET  /api/v1/balance/:userId
