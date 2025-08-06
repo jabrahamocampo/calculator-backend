@@ -47,7 +47,7 @@ app.post('/api/v1/auth/login', (req, res) => forwardRequest(AUTH_SERVICE, 'post'
 
 // ====== Rutas Operations Service ======
 app.get('/api/v1/operations', (req, res) => forwardRequest(OPERATION_SERVICE, 'get', '/list', req, res));
-app.post('/api/v1/operations', (req, res) => forwardRequest(OPERATION_SERVICE, 'post', '/execute', req, res));
+/*app.post('/api/v1/operations', (req, res) => forwardRequest(OPERATION_SERVICE, 'post', '/execute', req, res));
 
 // ====== Rutas Records Service ======
 app.get('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'get', '/', req, res));  //router.get('/', authenticate, handleGetUserRecords);
@@ -59,7 +59,7 @@ app.get('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'get', '
 app.get('/api/v1/balance/:userId', (req, res) => forwardRequest(BALANCE_SERVICE, 'get', `/${req.params.userId}`, req, res)); //router.get('/:userId', authenticate, handleGetBalance); GET  /api/v1/balance/:userId
 app.post('/api/v1/balance/', (req, res) => forwardRequest(BALANCE_SERVICE, 'post', '/', req, res)); //router.post('/', handleCreateBalance);  POST /api/v1/balance
 app.put('/api/v1/balance/', (req, res) => forwardRequest(BALANCE_SERVICE, 'put', `/${req.params.userId}`, req, res)); //router.put('/:userId', authenticate, handleUpdateBalance); PUT  /api/v1/balance/:userId
-
+*/
 // ====== Ruta base ======
 app.get('/', (req, res) => {
   res.send('✅ API Gateway funcionando con Axios');
