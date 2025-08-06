@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 //Routes
-app.use('/api/v1/operations', operationRoutes);
+app.use('/', operationRoutes);
 
 //Base Route for validation
 app.get('/', (req, res) => {
