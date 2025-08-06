@@ -107,7 +107,7 @@ The application is live at: **https://calculator-seven-wine-91.vercel.app**
 | Service           | Description                                   | Production URL           
 | ----------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | API Gateway       | Entry point that routes requests to services. | [https://calculator-backend-api-gateway.onrender.com]
-| Auth Service      | Handles user registration, login, and JWT.    | [[https://calculator-backend-tax8.onrender.com]
+| Auth Service      | Handles user registration, login, and JWT.    | https://calculator-backend-auth-service-1.onrender.com
 | Operation Service | Handles mathematical operations.              | [https://calculator-backend-operation-service.onrender.com]
 | Balance Service   | Manages user balances.                        | [https://calculator-backend-balance-service.onrender.com]
 | Record Service    | Stores and retrieves user operation history.  | [https://calculator-backend-record-service.onrender.com]
