@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import cors from 'cors';
+import axios from 'axios';
 
 dotenv.config();
 const app = express();
