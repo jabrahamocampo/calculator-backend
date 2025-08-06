@@ -60,7 +60,7 @@ app.delete('/api/v1/records/:id', (req, res) => forwardRequest(RECORD_SERVICE, '
 app.get('/api/v1/records/export', (req, res) => {
   console.log("🔍 Verificando RECORD_SERVICE:", RECORD_SERVICE);
   console.log("📦 Petición recibida en /api/v1/records/export");
-  forwardRequest(RECORD_SERVICE, 'get', '/export', req, res)); //router.get('/export', authenticate, handleExportRecords);
+  forwardRequest(RECORD_SERVICE, 'get', '/export', req, res); //router.get('/export', authenticate, handleExportRecords);
 });  
 
 // ====== Rutas Balance Service ======
