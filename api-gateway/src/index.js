@@ -54,7 +54,7 @@ app.get('/api/v1/operations/list', (req, res) => forwardRequest(OPERATION_SERVIC
 //app.post('/api/v1/operations', (req, res) => forwardRequest(OPERATION_SERVICE, 'post', '/execute', req, res));
 
 // ====== Rutas Records Service ======
-//app.get('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'get', '/', req, res));  //router.get('/', authenticate, handleGetUserRecords);
+app.get('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'get', '/', req, res));  //router.get('/', authenticate, handleGetUserRecords);
 //app.post('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'post', '/', req, res)); //router.post('/', authenticate, handleNewRecord); // POST /api/v1/records
 //app.delete('/api/v1/records/:id', (req, res) => forwardRequest(RECORD_SERVICE, 'delete', `/${req.params.id}`, req, res));  //router.delete('/:recordId', authenticate, handleSoftDelete);
 //app.get('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'get', '/export', req, res)); //router.get('/export', authenticate, handleExportRecords);
