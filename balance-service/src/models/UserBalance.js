@@ -10,11 +10,11 @@ const UserBalance = sequelize.define('UserBalance', {
   user_id: {
     type: DataTypes.UUID,
     allowNull: false,
-    unique: true, // un usuario = un registro de balance
+    unique: true, // One unique user
   },
   balance: {
     type: DataTypes.FLOAT,
-    defaultValue: 20.0, // saldo inicial por defecto
+    defaultValue: 20.0, // Initial Balance
   },
 }, {
   tableName: 'user_balances',

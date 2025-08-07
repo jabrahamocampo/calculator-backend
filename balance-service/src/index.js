@@ -8,15 +8,15 @@ const PORT = process.env.PORT || 4003;
 async function startServer() {
   try {
     await sequelize.authenticate();
-    console.log('Conectado a la base de datos');
+    console.log('Connecting to Data Base');
     await sequelize.sync({ alter: true });
-    console.log('Modelos sincronizados');
+    console.log('Models Sinchronized');
 
     app.listen(PORT, () => {
-      console.log(`Balance Service escuchando en http://localhost:${PORT}`);
+      console.log(`Balance Service listening on http://localhost:${PORT}`);
     });
   } catch (err) {
-    console.error('Error al conectar:', err);
+    console.error('Error connecting Data Base:', err);
   }
 }
 

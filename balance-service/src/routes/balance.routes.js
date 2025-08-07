@@ -6,11 +6,10 @@ import {
   handleUpdateBalance
 } from '../controllers/balance.controller.js';
 
-
 const router = Router();
 
-router.post('/', handleCreateBalance);               // POST /api/v1/balance
-router.get('/:userId', authenticate, handleGetBalance);            // GET  /api/v1/balance/:userId
-router.put('/:userId', authenticate, handleUpdateBalance);         // PUT  /api/v1/balance/:userId
+router.post('/', handleCreateBalance);
+router.get('/:userId', authenticate, handleGetBalance); 
+router.put('/:userId', authenticate, handleUpdateBalance); 
 
 export default router;
