@@ -9,15 +9,15 @@ const PORT = process.env.PORT || 4002;
 async function startServer() {
   try {
     await sequelize.authenticate();
-    console.log('Conectado a la base de datos');
+    console.log('Connecting to Data Base');
     await sequelize.sync({ alter: true });
-    console.log('Modelos sincronizados');
+    console.log('Models sinchronized');
 
     app.listen(PORT, () => {
-      console.log(`Record Service escuchando en http://localhost:${PORT}`);
+      console.log(`Record Service listenuing on http://localhost:${PORT}`);
     });
   } catch (err) {
-    console.error('Error al conectar:', err);
+    console.error('Error Connection:', err);
   }
 }
 

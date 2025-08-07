@@ -23,7 +23,7 @@ const User = sequelize.define('User', {
   },
   balance: {
     type: DataTypes.FLOAT,
-    defaultValue: 20.0, // Balance inicial
+    defaultValue: 20.0, // Initial Balance
   },
 }, {
   tableName: 'users',

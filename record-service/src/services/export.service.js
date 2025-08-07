@@ -7,7 +7,7 @@ import { Readable } from "stream";
 const BUCKET_NAME = process.env.S3_BUCKET_NAME;
 
 export async function exportUserRecords(userId) {
-  const records = await getRecordsByUserId(userId); // Debes tener esta función
+  const records = await getRecordsByUserId(userId); 
 
   const fileContent = JSON.stringify(records, null, 2);
   const fileName = `records/user-${userId}-${Date.now()}.json`;
@@ -27,7 +27,7 @@ export async function exportUserRecords(userId) {
   });
 
   const presignedUrl = await getSignedUrl(s3Client, getCommand, {
-    expiresIn: 3600, // 1 hora
+    expiresIn: 3600, // 1 hour
   });
 
   return { presignedUrl, fileName };

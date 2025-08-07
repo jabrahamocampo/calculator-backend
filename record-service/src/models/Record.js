@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
-//import User from './User.js';
 
 const Record = sequelize.define('Record', {
   id: {
@@ -35,10 +34,7 @@ const Record = sequelize.define('Record', {
 }, {
   tableName: 'records',
   timestamps: true,
-  paranoid: true, // Sequelize maneja soft delete automáticamente con deletedAt
+  paranoid: true, // Sequelize handles soft delete automatically on deletedAt
 });
-
-//User.hasMany(Record, { foreignKey: 'user_id' });
-//Record.belongsTo(User, { foreignKey: 'user_id' });
 
 export default Record;

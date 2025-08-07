@@ -1,4 +1,3 @@
-// src/middleware/auth.middleware.js
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';

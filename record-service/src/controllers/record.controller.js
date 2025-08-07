@@ -23,7 +23,7 @@ export async function handleNewRecord(req, res) {
     });
 
     res.status(201).json({
-      message: 'Operación registrada con éxito',
+      message: 'Operation registered successfully',
       record
     });
   } catch (err) {
@@ -60,7 +60,6 @@ export async function handleGetUserRecords(req, res) {
 export async function handleSoftDelete(req, res) {
   const { recordId } = req.params;
   const userId  = req.user.id;
-  console.log('El user id para borrar el record es: ', userId);
   try {
     const result = await softDeleteRecord(recordId, userId);
     res.json(result);

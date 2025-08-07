@@ -7,11 +7,9 @@ import {
     handleExportRecords
 } from '../controllers/record.controller.js';
 
-
 const router = Router();
 
-router.post('/', authenticate, handleNewRecord); // POST /api/v1/records
-//router.get('/user/:userId', authenticate, handleGetUserRecords);
+router.post('/', authenticate, handleNewRecord);
 router.get('/', authenticate, handleGetUserRecords);
 router.delete('/:recordId', authenticate, handleSoftDelete);
 router.get('/export', authenticate, handleExportRecords);
