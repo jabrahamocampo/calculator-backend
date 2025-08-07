@@ -14,15 +14,12 @@ export async function registerUser(username, password) {
   
   //Call balance service to register new userId and initial balance (20 credits)
   try{
-    //await axios.post('http://localhost:4003', {
     await axios.post('https://calculator-backend-balance-service.onrender.com', {
       userId: user.id,
     });
-   
   }catch(err){
     console.error('Error creating initial balance: ', err.messaje);
   }
-
   return user;
 }
 

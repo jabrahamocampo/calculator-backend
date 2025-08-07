@@ -7,19 +7,10 @@ const app = express();
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Logs globales para depuración
-app.use((req, res, next) => {
-  console.log(`📥 [Auth Service] ${req.method} ${req.originalUrl}`);
-  console.log(`🔹 Headers:`, req.headers);
-  console.log(`🔹 Body:`, req.body);
-  next();
-});
-
-// Rutas
+// Routes
 app.use('/', authRoutes);
-//app.use('/api/v1/auth', authRoutes);
 
-// Ruta base
+// Route base
 app.get('/', (req, res) => {
   res.send('Auth Service is running');
 });
