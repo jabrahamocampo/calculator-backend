@@ -54,6 +54,7 @@ export async function executeOperation(type, operands, userId, token) {
       break;
     case 'square_root':
       if (operands.length !== 1) throw new Error('Only one operand is allowed');
+      if (operands[0] < 0) throw new Error('Square root of negative numbers is not allowed'); 
       result = Math.sqrt(operands[0]);
       break;
     case 'random_string':
