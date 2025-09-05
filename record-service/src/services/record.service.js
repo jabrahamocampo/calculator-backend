@@ -1,5 +1,6 @@
 import { Op } from 'sequelize';
 import Record from '../models/Record.js';
+import ApiError from '../errors/ApiError.js';
 
 function formatDateToMMDDYYYY_HHMM(dateString) {
   const date = new Date(dateString);
@@ -26,6 +27,10 @@ export async function performOperationForUser({
     user_id,
   });
 
+  if (!record) {
+    throw ApiError.badRequest('Operation not registered.');
+  }
+
   return { record };
 }
 
@@ -37,6 +42,10 @@ export async function getRecordsByUserId(userId) {
     },
     order: [['createdAt', 'DESC']],
   });
+
+  if (!records) {
+    throw ApiError.notFound('Records not found');
+  }
 
   return records.map(record => ({
     ...record.toJSON(),
@@ -91,7 +100,7 @@ export async function softDeleteRecord(recordId, userId) {
     },
   });
 
-  if (!record) throw new Error('Record not found or unauthorized');
+  if (!record) throw ApiError.notFound('Record not found or unauthorized');
 
   await record.destroy();
   return { message: 'Record successfully deleted' };
