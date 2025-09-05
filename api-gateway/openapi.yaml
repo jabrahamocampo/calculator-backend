@@ -1,0 +1,577 @@
+openapi: 3.0.3
+info:
+  title: Calculator Microservices API
+  description: |
+    Centralized API documentation for all microservices:
+    - **Auth Service**: user authentication and registration
+    - **Balance Service**: user balance management
+    - **Operation Service**: execute mathematical operations
+    - **Record Service**: store and query user operation records
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/v1
+    description: API Gateway (local)
+
+tags:
+  - name: Authentication Service
+    description: User authentication endpoints
+  - name: Balance Service
+    description: User balance endpoints
+  - name: Operations Service
+    description: Mathematical operations
+  - name: Records Service
+    description: User operation records
+
+paths:
+  # ======================
+  # AUTH SERVICE
+  # ======================
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        "201":
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+        "400":
+          description: User already exists or invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: User login and JWT token generation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        "400":
+          description: Wrong password or inactive account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ======================
+  # BALANCE SERVICE
+  # ======================
+  /balance:
+    post:
+      tags: [Balance]
+      summary: Create balance for a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBalanceRequest'
+      responses:
+        "201":
+          description: User balance created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+        "400":
+          description: Balance already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /balance/{userId}:
+    get:
+      tags: [Balance]
+      summary: Get user balance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: User identifier
+      responses:
+        "200":
+          description: User balance retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags: [Balance]
+      summary: Update user balance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBalanceRequest'
+      responses:
+        "200":
+          description: Balance updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ======================
+  # OPERATION SERVICE
+  # ======================
+  /operations/list:
+    get:
+      tags: [Operations]
+      summary: List all available operation types
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of operations with cost
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OperationType'
+        "404":
+          description: Operations not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /operations/execute:
+    post:
+      tags: [Operations]
+      summary: Execute an operation
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          schema:
+            type: string
+          required: false
+          description: Unique key to guarantee idempotency
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecuteOperationRequest'
+      responses:
+        "201":
+          description: Operation executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecuteOperationResponse'
+        "400":
+          description: Bad request or insufficient balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Operation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "503":
+          description: External service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ======================
+  # RECORD SERVICE
+  # ======================
+  /records:
+    post:
+      tags: [Records]
+      summary: Register a new operation record
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewRecordRequest'
+      responses:
+        "201":
+          description: Operation registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewRecordResponse'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags: [Records]
+      summary: Get paginated user records
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: perPage
+          schema:
+            type: integer
+            default: 10
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: orderBy
+          schema:
+            type: string
+            default: createdAt
+        - in: query
+          name: order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        "200":
+          description: Paginated list of records
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRecordsResponse'
+        "404":
+          description: Records not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /records/{recordId}:
+    delete:
+      tags: [Records]
+      summary: Soft delete a record
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: recordId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Record deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteRecordResponse'
+        "404":
+          description: Record not found or unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /records/export:
+    get:
+      tags: [Records]
+      summary: Export user records to S3 and get presigned URL
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Presigned URL for exported records
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportRecordsResponse'
+        "404":
+          description: Records not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # ===== AUTH =====
+    RegisterRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          example: user1
+        password:
+          type: string
+          example: secret123
+
+    RegisterResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: User Registered
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            username:
+              type: string
+
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          example: user1
+        password:
+          type: string
+          example: secret123
+
+    LoginResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Login successful
+        token:
+          type: string
+          description: JWT token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    # ===== BALANCE =====
+    CreateBalanceRequest:
+      type: object
+      required: [userId]
+      properties:
+        userId:
+          type: string
+          format: uuid
+
+    UpdateBalanceRequest:
+      type: object
+      required: [balance]
+      properties:
+        balance:
+          type: number
+          example: 100
+
+    BalanceResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        balance:
+          type: number
+          example: 100
+
+    # ===== OPERATION =====
+    OperationType:
+      type: object
+      properties:
+        type:
+          type: string
+          example: addition
+        cost:
+          type: number
+          example: 5
+
+    ExecuteOperationRequest:
+      type: object
+      required: [type, operands]
+      properties:
+        type:
+          type: string
+          description: Operation type
+          example: addition
+        operands:
+          type: array
+          items:
+            type: number
+          description: Operands for the operation
+          example: [10, 5]
+
+    ExecuteOperationResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          example: "15.00"
+        cost:
+          type: number
+          example: 5
+        newBalance:
+          type: number
+          example: 95
+
+    # ===== RECORD =====
+    Record:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        operation_type:
+          type: string
+        amount:
+          type: number
+        user_balance:
+          type: number
+        operation_response:
+          type: string
+        user_id:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    NewRecordRequest:
+      type: object
+      required: [operation_type, amount, user_balance, operation_response, user_id]
+      properties:
+        operation_type:
+          type: string
+        amount:
+          type: number
+        user_balance:
+          type: number
+        operation_response:
+          type: string
+        user_id:
+          type: string
+          format: uuid
+
+    NewRecordResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operation registered successfully
+        record:
+          $ref: '#/components/schemas/Record'
+
+    PaginatedRecordsResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 100
+        page:
+          type: integer
+          example: 1
+        perPage:
+          type: integer
+          example: 10
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/Record'
+
+    DeleteRecordResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Record successfully deleted
+
+    ExportRecordsResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          example: https://s3.amazonaws.com/bucket/records/user-d290f1ee-1234.json
+
+    # ===== ERRORS =====
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Record not found or unauthorized"
+        status:
+          type: integer
+          example: 404
