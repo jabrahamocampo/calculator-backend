@@ -3,6 +3,11 @@ import sequelize from './config/database.js';
 import app from './app.js';
 
 dotenv.config();
+
+if (!process.env.JWT_SECRET) {
+  throw new Error("FATAL: Missing JWT_SECRET");
+}
+
 const PORT = process.env.PORT || 4003;
 
 async function startServer() {

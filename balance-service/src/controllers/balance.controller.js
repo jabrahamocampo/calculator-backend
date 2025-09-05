@@ -3,37 +3,27 @@ import {
   getUserBalance,
   updateUserBalance
 } from '../services/balance.service.js';
+import asyncHandler from '../utils/asyncHandler.js';
+import logger from '../utils/logger.js';
 
-export async function handleCreateBalance(req, res) {
+export const handleCreateBalance = asyncHandler(async (req, res)  => {
+  logger.info({ correlationId: req.headers['x-correlation-id'], userId: req.user?.id }, 'Creating user balance');
   const { userId } = req.body;
+  const newBalance = await createUserBalance(userId);
+  res.status(201).json(newBalance);
+});
 
-  try {
-    const newBalance = await createUserBalance(userId);
-    res.status(201).json(newBalance);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-}
-
-export async function handleGetBalance(req, res) {
+export const handleGetBalance = asyncHandler(async (req, res) => {
+  logger.info({ correlationId: req.headers['x-correlation-id'], userId: req.user?.id }, 'Getting user balance');
   const { userId } = req.params;
+  const balance = await getUserBalance(userId);
+  res.status(200).json(balance);
+});
 
-  try {
-    const balance = await getUserBalance(userId);
-    res.status(200).json(balance);
-  } catch (err) {
-    res.status(404).json({ error: err.message });
-  }
-}
-
-export async function handleUpdateBalance(req, res) {
+export const handleUpdateBalance = asyncHandler(async (req, res) => {
+  logger.info({ correlationId: req.headers['x-correlation-id'], userId: req.user?.id }, 'Updating user balance');
   const { userId } = req.params;
   const { balance } = req.body;
-
-  try {
-    const updated = await updateUserBalance(userId, balance);
-    res.status(200).json(updated);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-}
+  const updated = await updateUserBalance(userId, balance);
+  res.status(200).json(updated);
+});
