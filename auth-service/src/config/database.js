@@ -12,7 +12,7 @@ export async function syncDatabase() {
   if (process.env.NODE_ENV === 'test') {
     await sequelize.sync({ force: true }); // Warning: This removes all data from table, use just for dev/test env.
   } else {
-    await sequelize.sync(); // Note: This validation is to avoid remove data in procution table.
+    await sequelize.sync({ alter: true }); // Note: This validation is to avoid remove data in procution table.
   }
 }
 

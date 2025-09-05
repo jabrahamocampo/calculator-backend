@@ -1,24 +1,32 @@
 import dotenv from 'dotenv';
-import sequelize from './config/database.js';
+import sequelize, { syncDatabase } from './config/database.js';
 import app from './app.js';
+import IdempotencyKey from './models/IdempotencyKey.js';
+import User from './models/User.js';
 
 dotenv.config();
+
+if (!process.env.JWT_SECRET) {
+  throw new Error("FATAL: Missing JWT_SECRET");
+}
 
 const PORT = process.env.PORT || 4000;
 
 async function startServer() {
   try {
+    // Validate DB connection
     await sequelize.authenticate();
     console.log('Connection to the database established successfully.');
 
-    await sequelize.sync({ alter: true });
-    console.log('Models synchronized with the database.');
+    // Synchronize all models
+    await syncDatabase();
 
+    // Start the server
     app.listen(PORT, () => {
-      console.log(`Auth Service listen on http://localhost:${PORT}`);
+      console.log(`Auth Service listening on http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('Connection to data base not success', error);
+    console.error('Failed to start Auth Service:', error);
     process.exit(1);
   }
 }
