@@ -1,6 +1,8 @@
 import Operation from '../models/Operation.js';
 import dotenv from 'dotenv';
 import axios from 'axios';
+import ApiError from '../errors/ApiError.js';
+import Decimal from '../config/decimal.config.js';
 
 dotenv.config();
 
@@ -8,62 +10,96 @@ const RECORD_SERVICE = process.env.RECORD_SERVICE;
 const BALANCE_SERVICE = process.env.BALANCE_SERVICE;
 
 export async function listOperations() {
-  return await Operation.findAll({ attributes: ['type', 'cost'] });
+  const allOperatoins = await Operation.findAll({ attributes: ['type', 'cost'] });
+  if (!allOperatoins) {
+    throw ApiError.notFound('Operations not found');
+  }
+  return allOperatoins;
 }
 
-export async function executeOperation(type, operands, userId, token) {
+export async function executeOperation(type, operands, userId, token, correlationId, randomParams) {
+  if (!type && !operands) throw ApiError.badRequest('Please provide operation and operands.');
+
   const operation = await Operation.findOne({ where: { type } });
   if (!operation) {
-    throw new Error('Invalid Operation');
+    throw ApiError.notFound('Invalid Operation');
   }
-  const cost = operation.cost;
+  
   const balanceRes = await axios.get(`${BALANCE_SERVICE}/${userId}`, {
     headers: {
-      Authorization: token
+      Authorization: token,
+      ['x-correlation-id'] : correlationId,
     }
   });
 
+  const cost = operation.cost;
   const currentBalance = balanceRes.data.balance;
 
   if (currentBalance < cost) {
-    throw new Error('Insufficient balance');
+    throw ApiError.badRequest('Insufficient balance');
   }
-
-  const newBalance = currentBalance - cost;
 
   if (
     type !== 'random_string' &&
     (!Array.isArray(operands) || operands.some((n) => typeof n !== 'number' || isNaN(n)))
   ) {
-    throw new Error('All operands must be valid numbers');
+    throw ApiError.badRequest('All operands must be valid numbers. Please try again.');
   }
 
   let result;
   switch (type) {
     case 'addition':
-      result = operands.reduce((a, b) => a + b, 0);
+      result = operands
+        .reduce((a, b) => new Decimal(a).plus(b), new Decimal(0))
+        .toFixed(2);
       break;
-    case 'subtraction':
-      result = operands.reduce((a, b) => a - b);
-      break;
-    case 'multiplication':
-      result = operands.reduce((a, b) => a * b, 1);
-      break;
-    case 'division':
-      result = operands.reduce((a, b) => a / b);
-      break;
-    case 'square_root':
-      if (operands.length !== 1) throw new Error('Only one operand is allowed');
-      if (operands[0] < 0) throw new Error('Square root of negative numbers is not allowed'); 
-      result = Math.sqrt(operands[0]);
-      break;
-    case 'random_string':
-      result = await generateRandomString();
-      break;
-    default:
-      throw new Error('Operation not supported');
-  }
 
+    case 'subtraction':
+      result = operands
+        .reduce((a, b) => new Decimal(a).minus(b))
+        .toFixed(2);
+      break;
+
+    case 'multiplication':
+      result = operands
+        .reduce((a, b) => new Decimal(a).times(b), new Decimal(1))
+        .toFixed(2);
+      break;
+
+    case 'division':
+      const values = operands.slice(1);
+      if (values.some(v => new Decimal(v).isZero())) {
+        throw ApiError.badRequest('Cannot divide by zero. Please enter a different divisor.');
+      }
+      if (operands.length === 1) {
+        throw ApiError.badRequest('Please enter both numbers: the dividend and the divisor.');
+      }
+      result = operands
+        .reduce((a, b) => new Decimal(a).dividedBy(b))
+        .toFixed(2);
+      break;
+
+    case 'square_root':
+      if (operands.length !== 1) {
+        throw ApiError.badRequest('Only one operand is allowed. Please try again.');
+      }
+      if (new Decimal(operands[0]).isNegative()) {
+        throw ApiError.badRequest('Square root of negative numbers is not allowed. Please try with positive number.');
+      }
+      result = new Decimal(operands[0]).sqrt().toFixed(2);
+      break;
+
+    case 'random_string':
+      result = await generateRandomString(randomParams);
+      break;
+
+    default:
+      throw ApiError.badRequest('Operation not supported');
+  }
+  
+  const newBalance = currentBalance - cost;
+
+  // Saving Record
   await axios.post(`${RECORD_SERVICE}/`, {
     operation_type: type,
     amount: cost,
@@ -72,15 +108,18 @@ export async function executeOperation(type, operands, userId, token) {
     user_id: userId,
   }, {
     headers: {
-      Authorization: token
+      Authorization: token,
+      ['x-correlation-id'] : correlationId,
     }
   });
 
+  // Updating balance
   await axios.put(`${BALANCE_SERVICE}/${userId}`, {
     balance: newBalance
   }, {
     headers: {
-      Authorization: token
+      Authorization: token,
+      ['x-correlation-id'] : correlationId,
     }
   });
 
@@ -91,8 +130,9 @@ export async function executeOperation(type, operands, userId, token) {
   };
 }
 
-async function generateRandomString() {
-  const response = await fetch('https://www.random.org/strings/?num=1&len=10&digits=on&upperalpha=on&loweralpha=on&unique=on&format=plain&rnd=new');
+async function generateRandomString(randomParams) {
+  const url = `https://www.random.org/strings/?num=${randomParams.num}&len=${randomParams.len}&digits=${randomParams.digits}&upperalpha=${randomParams.upperalpha}&loweralpha=${randomParams.loweralpha}&unique${randomParams.unique}&format=plain&rnd=new`;
+  const response = await fetch(url);
   const text = await response.text();
-  return text.trim();
+  return text.trim().split("\n");
 }
