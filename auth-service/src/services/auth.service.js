@@ -57,14 +57,9 @@ export async function loginUser(username, password) {
   }
 
   // Compare password safely
-  try {
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      throw ApiError.badRequest('Wrong password');
-    }
-  } catch (err) {
-    // bcrypt threw or other problem
-    throw ApiError.internal('Error validating credentials', err);
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    throw ApiError.badRequest('Wrong password');
   }
 
   // Ensure JWT secret exists
