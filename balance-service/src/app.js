@@ -33,13 +33,13 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Routes
-app.use('/', balanceRoutes);
-
 // Base Route for validation
 app.get('/', (req, res) => {
   res.send('Balance Service is running');
 });
+
+// Routes
+app.use('/', balanceRoutes);
 
 // Middleware of errors
 app.use(errorHandler);
