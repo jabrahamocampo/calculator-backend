@@ -37,7 +37,7 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 // Routes
-app.use('/', operationRoutes);
+app.use('/operations', operationRoutes);
 
 // Base route
 app.get('/', (req, res) => {

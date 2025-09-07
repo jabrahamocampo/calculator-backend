@@ -71,8 +71,8 @@ app.post('/api/v1/auth/register', (req, res) => forwardRequest(AUTH_SERVICE, 'po
 app.post('/api/v1/auth/login', (req, res) => forwardRequest(AUTH_SERVICE, 'post', '/auth/login', req, res));
 
 // Operations Service Routes
-app.get('/api/v1/operations/list', (req, res) => forwardRequest(OPERATION_SERVICE, 'get', '/list', req, res));
-app.post('/api/v1/operations/execute', (req, res) => forwardRequest(OPERATION_SERVICE, 'post', '/execute', req, res));
+app.get('/api/v1/operations/list', (req, res) => forwardRequest(OPERATION_SERVICE, 'get', '/operations/list', req, res));
+app.post('/api/v1/operations/execute', (req, res) => forwardRequest(OPERATION_SERVICE, 'post', '/operations/execute', req, res));
 
 // Records Service Routes
 app.get('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'get', '/', req, res)); 
