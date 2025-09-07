@@ -55,12 +55,26 @@ app.use(morgan('dev'));
 // Routes
 app.use('/operations', operationRoutes);
 
-// Base route
+// Keep a simple base route that never depends on DB or other services
 app.get('/', (req, res) => {
-  res.send('Operation Service is running');
+  // defensive try/catch just to log
+  try {
+    res.send('Auth Service is running');
+  } catch (err) {
+    console.error('[BASE /] unexpected error:', err);
+    throw err;
+  }
 });
 
 // Middleware of errors
 app.use(errorHandler);
+
+// Unhandled rejections / exceptions => log (helps debugging)
+process.on('unhandledRejection', (reason) => {
+  console.error('UNHANDLED REJECTION:', reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT EXCEPTION:', err);
+});
 
 export default app;

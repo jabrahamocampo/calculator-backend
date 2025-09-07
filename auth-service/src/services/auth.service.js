@@ -17,7 +17,7 @@ export async function registerUser(username, password, correlationId) {
  
   //Call balance service to register new userId and initial balance (20 credits)
   try{
-    await axios.post(`${process.env.BALANCE_SERVICE}`, {
+    await axios.post(`${process.env.BALANCE_SERVICE}/balance`, {
       userId: user.id,
     },
     {

@@ -25,7 +25,7 @@ export async function executeOperation(type, operands, userId, token, correlatio
     throw ApiError.notFound('Invalid Operation');
   }
   
-  const balanceRes = await axios.get(`${BALANCE_SERVICE}/${userId}`, {
+  const balanceRes = await axios.get(`${BALANCE_SERVICE}/balance/${userId}`, {
     headers: {
       Authorization: token,
       ['x-correlation-id'] : correlationId,
@@ -100,7 +100,7 @@ export async function executeOperation(type, operands, userId, token, correlatio
   const newBalance = currentBalance - cost;
 
   // Saving Record
-  await axios.post(`${RECORD_SERVICE}/`, {
+  await axios.post(`${RECORD_SERVICE}/records/`, {
     operation_type: type,
     amount: cost,
     user_balance: newBalance,
@@ -114,7 +114,7 @@ export async function executeOperation(type, operands, userId, token, correlatio
   });
 
   // Updating balance
-  await axios.put(`${BALANCE_SERVICE}/${userId}`, {
+  await axios.put(`${BALANCE_SERVICE}/balance/${userId}`, {
     balance: newBalance
   }, {
     headers: {

@@ -75,17 +75,17 @@ app.get('/api/v1/operations/list', (req, res) => forwardRequest(OPERATION_SERVIC
 app.post('/api/v1/operations/execute', (req, res) => forwardRequest(OPERATION_SERVICE, 'post', '/operations/execute', req, res));
 
 // Records Service Routes
-app.get('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'get', '/', req, res)); 
-app.post('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'post', '/', req, res));
-app.delete('/api/v1/records/:id', (req, res) => forwardRequest(RECORD_SERVICE, 'delete', `/${req.params.id}`, req, res));
+app.get('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'get', '/records', req, res)); 
+app.post('/api/v1/records', (req, res) => forwardRequest(RECORD_SERVICE, 'post', '/records', req, res));
+app.delete('/api/v1/records/:id', (req, res) => forwardRequest(RECORD_SERVICE, 'delete', `/records/${req.params.id}`, req, res));
 app.get('/api/v1/records/export', (req, res) => {
-forwardRequest(RECORD_SERVICE, 'get', '/export', req, res); 
+forwardRequest(RECORD_SERVICE, 'get', '/records/export', req, res); 
 });  
 
 // Balance Service Routes
-app.get('/api/v1/balance/:userId', (req, res) => forwardRequest(BALANCE_SERVICE, 'get', `/${req.params.userId}`, req, res));
-app.post('/api/v1/balance/', (req, res) => forwardRequest(BALANCE_SERVICE, 'post', '/', req, res));
-app.put('/api/v1/balance/', (req, res) => forwardRequest(BALANCE_SERVICE, 'put', `/${req.params.userId}`, req, res));
+app.get('/api/v1/balance/:userId', (req, res) => forwardRequest(BALANCE_SERVICE, 'get', `/balance/${req.params.userId}`, req, res));
+app.post('/api/v1/balance/', (req, res) => forwardRequest(BALANCE_SERVICE, 'post', '/balance', req, res));
+app.put('/api/v1/balance/', (req, res) => forwardRequest(BALANCE_SERVICE, 'put', `/balance/${req.params.userId}`, req, res));
 
 // Base Route
 app.get('/', (req, res) => {
