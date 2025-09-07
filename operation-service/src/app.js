@@ -8,13 +8,20 @@ import sequelize from './config/database.js';
 
 const app = express();
 
+// Request logger (very early)
 app.use((req, res, next) => {
-  const correlationId = req.headers['x-correlation-id'];
-  const userId = req.headers['x-user-id'] || 'anonymous';
-  req.correlationId = correlationId;
-  res.setHeader('X-Correlation-ID', correlationId);
-  console.log(`[${correlationId}] [User:${userId}] ${req.method} ${req.originalUrl}`);
+  console.log(`[REQ] ${new Date().toISOString()} ${req.method} ${req.originalUrl} headers:`, {
+    'x-correlation-id': req.headers['x-correlation-id'],
+    'x-user-id': req.headers['x-user-id'],
+    authorization: !!req.headers['authorization'],
+    'content-type': req.headers['content-type'],
+  });
   next();
+});
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType);
+  res.end(await client.register.metrics());
 });
 
 app.get('/health', async (req, res) => {
@@ -22,13 +29,22 @@ app.get('/health', async (req, res) => {
     await sequelize.authenticate();
     res.json({ status: 'UP', db: 'UP' });
   } catch (error) {
+    console.error('[HEALTH] sequelize.authenticate error:', error);
     res.status(500).json({ status: 'DOWN', db: 'DOWN', error: error.message });
   }
 });
 
-app.get('/metrics', async (req, res) => {
-  res.set('Content-Type', client.register.contentType);
-  res.end(await client.register.metrics());
+app.use((req, res, next) => {
+ try{  
+    const correlationId = req.headers['x-correlation-id'] || `cid-${Date.now()}`;
+    const userId = req.headers['x-user-id'] || 'anonymous';
+    req.correlationId = correlationId;
+    res.setHeader('X-Correlation-ID', correlationId);
+    console.log(`[${correlationId}] [User:${userId}] ${req.method} ${req.originalUrl}`);
+    next();
+ } catch (err) {
+    next(err);
+ }  
 });
 
 // Middlewares
