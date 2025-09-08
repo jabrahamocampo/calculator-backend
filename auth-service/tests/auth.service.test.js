@@ -28,7 +28,7 @@ describe("auth.service", () => {
     expect(User.findOne).toHaveBeenCalledWith({ where: { username: "spock" } });
     expect(User.create).toHaveBeenCalledWith({ username: "spock", password: "hashed_pw" });
     expect(axios.post).toHaveBeenCalledWith(
-      "http://balance-service",
+      "http://balance-service/balance",
       { userId: 1 },
       expect.objectContaining({ headers: {"Content-Type": "application/json", "x-correlation-id": "corr-1"}})
     );
@@ -75,7 +75,7 @@ describe("auth.service", () => {
     bcrypt.compare.mockResolvedValue(false);
 
     await expect(loginUser("spock", "badpw")).rejects.toEqual(
-      ApiError.badRequest("Error validating credentials")
+      ApiError.badRequest("Wrong password")
     );
   });
 

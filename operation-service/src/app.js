@@ -59,7 +59,7 @@ app.use('/operations', operationRoutes);
 app.get('/', (req, res) => {
   // defensive try/catch just to log
   try {
-    res.send('Auth Service is running');
+    res.send('Operation Service is running');
   } catch (err) {
     console.error('[BASE /] unexpected error:', err);
     throw err;
