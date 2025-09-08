@@ -145,7 +145,7 @@ The production application is live at: **https://calculator-seven-wine-91.vercel
 --------------------------------------------------------------------------
 ## Project Architecture 
 
-![Project Architecture](docs/App-Microservices-Arquitecture.png)
+![Project Architecture](.docs/App-Microservices-Arquitecture.png)
 
 ┌─────────────┐     ┌───────────────┐     ┌──────────────────┐
 │             │     │               │     │                  │
