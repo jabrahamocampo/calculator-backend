@@ -151,6 +151,8 @@ Any comment or questions please let me know: jabraham.ocampo@gmail.com
 ## Project Architecture 
 
 ![Project Architecture](.docs/App-Microservices-Arquitecture.png)
+<img src=".docs/App-Microservices-Arquitecture.png" alt="Project Architecture" width="800"/>
+
 
 ┌─────────────┐     ┌───────────────┐     ┌──────────────────┐
 │             │     │               │     │                  │
