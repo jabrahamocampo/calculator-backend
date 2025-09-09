@@ -1,4 +1,4 @@
-name: Backend CI (api-gateway only)
+name: Backend CI (api-gateway + auth-service)
 
 on:
   push:
@@ -11,13 +11,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  api-gateway-ci:
-    name: api-gateway - Install → Lint → Test → Build
+  service-ci:
+    name: ${{ matrix.service }} - Install → Lint → Test → Build
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [ "api-gateway", "auth-service" ]
 
     defaults:
       run:
-        working-directory: ./api-gateway
+        working-directory: ./${{ matrix.service }}
 
     steps:
       - name: Checkout
@@ -28,7 +33,7 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: ./api-gateway/package-lock.json
+          cache-dependency-path: ./${{ matrix.service }}/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -38,7 +43,7 @@ jobs:
           if npm run | grep -q "lint"; then
             npm run lint
           else
-            echo "No lint script found in api-gateway, skipping."
+            echo "No lint script found in ${{ matrix.service }}, skipping."
           fi
 
       - name: Run tests with coverage
@@ -55,13 +60,13 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-api-gateway
-          path: ./api-gateway/coverage
+          name: coverage-${{ matrix.service }}
+          path: ./${{ matrix.service }}/coverage
 
       - name: Build (if script exists)
         run: |
           if npm run | grep -q "build"; then
             npm run build
           else
-            echo "No build script in api-gateway, skipping."
+            echo "No build script in ${{ matrix.service }}, skipping."
           fi
