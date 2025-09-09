@@ -13,7 +13,10 @@
     "build": "echo \"no build step\""
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "transformIgnorePatterns": [
+    "/node_modules/(?!node-fetch/).+\\.js$"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -27,7 +30,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
-    "node-fetch": "^3.3.2",
+    "node-fetch": "^2.7.0",
     "pg": "^8.16.3",
     "pg-hstore": "^2.3.4",
     "pino": "^9.9.0",
