@@ -1,5 +1,4 @@
-#!/bin/sh
-# Espera hasta que PostgreSQL esté listo
+# Wait until PostgreSQL is up and ready
 set -e
 
 host="$1"

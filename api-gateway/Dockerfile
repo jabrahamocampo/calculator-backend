@@ -1,25 +1,25 @@
-# Etapa base: Node.js en Alpine
+# Node.js Image Base
 FROM node:20-alpine
 
-# Instalar PostgreSQL client (pg_isready) y dependencias necesarias
+# PostgreSQL instal dependency client
 RUN apk add --no-cache postgresql-client bash
 
-# Crear directorio de trabajo
+# Creates work directory
 WORKDIR /usr/src/app
 
-# Copiar archivos de dependencias e instalar
+# Copy dependency files
 COPY package*.json ./
 RUN npm ci --only=production
 
-# Copiar todo el código fuente
+# Copy the code
 COPY . .
 
-# Copiar el script de espera a PostgreSQL y dar permisos
+# Copy script and wait for PostgreSQL database
 COPY scripts/wait-for-postgres.sh /wait-for-postgres.sh
 RUN chmod +x /wait-for-postgres.sh
 
-# Exponer puerto
+# Expose port
 EXPOSE 8080
 
-# Ejecutar script de espera y luego iniciar el servidor
+# Execute script of wait and then start the server
 CMD ["/wait-for-postgres.sh", "postgres", "node", "src/index.js"]

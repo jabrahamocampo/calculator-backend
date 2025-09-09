@@ -7,7 +7,6 @@ import sequelize from './config/database.js';
 
 const app = express();
 
-// Request logger (very early)
 app.use((req, res, next) => {
   console.log(`[REQ] ${new Date().toISOString()} ${req.method} ${req.originalUrl} headers:`, {
     'x-correlation-id': req.headers['x-correlation-id'],
@@ -48,12 +47,9 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(morgan('dev'));
 
-// === Routes: mount auth under /auth (recommended) ===
 app.use('/auth', authRoutes);
 
-// Keep a simple base route that never depends on DB or other services
 app.get('/', (req, res) => {
-  // defensive try/catch just to log
   try {
     res.send('Auth Service is running');
   } catch (err) {
@@ -62,10 +58,8 @@ app.get('/', (req, res) => {
   }
 });
 
-// Error handler (keeps the same behavior but logs stack in dev)
 app.use(errorHandler);
 
-// Unhandled rejections / exceptions => log (helps debugging)
 process.on('unhandledRejection', (reason) => {
   console.error('UNHANDLED REJECTION:', reason);
 });

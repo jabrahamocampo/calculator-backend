@@ -8,7 +8,6 @@ import sequelize from './config/database.js';
 
 const app = express();
 
-// Request logger (very early)
 app.use((req, res, next) => {
   console.log(`[REQ] ${new Date().toISOString()} ${req.method} ${req.originalUrl} headers:`, {
     'x-correlation-id': req.headers['x-correlation-id'],
@@ -55,9 +54,7 @@ app.use(morgan('dev'));
 // Routes
 app.use('/operations', operationRoutes);
 
-// Keep a simple base route that never depends on DB or other services
 app.get('/', (req, res) => {
-  // defensive try/catch just to log
   try {
     res.send('Operation Service is running');
   } catch (err) {
@@ -69,7 +66,6 @@ app.get('/', (req, res) => {
 // Middleware of errors
 app.use(errorHandler);
 
-// Unhandled rejections / exceptions => log (helps debugging)
 process.on('unhandledRejection', (reason) => {
   console.error('UNHANDLED REJECTION:', reason);
 });

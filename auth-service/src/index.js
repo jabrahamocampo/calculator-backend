@@ -14,14 +14,11 @@ const PORT = process.env.PORT || 4000;
 
 async function startServer() {
   try {
-    // Validate DB connection
     await sequelize.authenticate();
     console.log('Connection to the database established successfully.');
 
-    // Synchronize all models
     await syncDatabase();
 
-    // Start the server
     app.listen(PORT, () => {
       console.log(`Auth Service listening on http://localhost:${PORT}`);
     });

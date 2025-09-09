@@ -1,27 +1,27 @@
-# 1. Imagen base de Node.js LTS
+# 1. Node.js Image Base
 FROM node:20-alpine
 
-# 2. Instalar bash y postgresql-client para wait-for-postgres.sh
+# 2. PostgreSQL instal dependency client
 RUN apk add --no-cache bash postgresql-client
 
-# 3. Directorio de trabajo dentro del contenedor
+# 3. Creates work directory
 WORKDIR /usr/src/app
 
-# 4. Copiamos package.json y package-lock.json
+# 4. Copy dependency files
 COPY package*.json ./
 
-# 5. Instalamos dependencias de producción
+# 5. Install production dependency
 RUN npm ci --only=production
 
-# 6. Copiamos el resto del código
+# 6. Copy the code
 COPY . .
 
-# 7. Copiamos el script wait-for-postgres y le damos permisos
+# 7. Copy script and wait for PostgreSQL database
 COPY scripts/wait-for-postgres.sh /wait-for-postgres.sh
 RUN chmod +x /wait-for-postgres.sh
 
-# 8. Exponemos el puerto del servicio
+# 8. Expose Port
 EXPOSE 4001
 
-# 9. Comando para esperar a Postgres y luego iniciar la app
+# 9.  Execute script of wait and then start the server
 CMD ["/wait-for-postgres.sh", "postgres", "node", "src/index.js"]
