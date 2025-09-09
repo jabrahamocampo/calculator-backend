@@ -48,54 +48,61 @@ export async function executeOperation(type, operands, userId, token, correlatio
 
   let result;
   switch (type) {
-    case 'addition':
-      result = operands
-        .reduce((a, b) => new Decimal(a).plus(b), new Decimal(0))
-        .toFixed(2);
-      break;
-
-    case 'subtraction':
-      result = operands
-        .reduce((a, b) => new Decimal(a).minus(b))
-        .toFixed(2);
-      break;
-
-    case 'multiplication':
-      result = operands
-        .reduce((a, b) => new Decimal(a).times(b), new Decimal(1))
-        .toFixed(2);
-      break;
-
-    case 'division':
-      const values = operands.slice(1);
-      if (values.some(v => new Decimal(v).isZero())) {
-        throw ApiError.badRequest('Cannot divide by zero. Please enter a different divisor.');
-      }
-      if (operands.length === 1) {
-        throw ApiError.badRequest('Please enter both numbers: the dividend and the divisor.');
-      }
-      result = operands
-        .reduce((a, b) => new Decimal(a).dividedBy(b))
-        .toFixed(2);
-      break;
-
-    case 'square_root':
-      if (operands.length !== 1) {
-        throw ApiError.badRequest('Only one operand is allowed. Please try again.');
-      }
-      if (new Decimal(operands[0]).isNegative()) {
-        throw ApiError.badRequest('Square root of negative numbers is not allowed. Please try with positive number.');
-      }
-      result = new Decimal(operands[0]).sqrt().toFixed(2);
-      break;
-
-    case 'random_string':
-      result = await generateRandomString(randomParams);
-      break;
-
-    default:
-      throw ApiError.badRequest('Operation not supported');
+  case 'addition': {
+    result = operands
+      .reduce((a, b) => new Decimal(a).plus(b), new Decimal(0))
+      .toFixed(2);
+    break;
   }
+
+  case 'subtraction': {
+    result = operands
+      .reduce((a, b) => new Decimal(a).minus(b))
+      .toFixed(2);
+    break;
+  }
+
+  case 'multiplication': {
+    result = operands
+      .reduce((a, b) => new Decimal(a).times(b), new Decimal(1))
+      .toFixed(2);
+    break;
+  }
+
+  case 'division': {
+    const values = operands.slice(1); // Ahora está dentro del bloque
+    if (values.some(v => new Decimal(v).isZero())) {
+      throw ApiError.badRequest('Cannot divide by zero. Please enter a different divisor.');
+    }
+    if (operands.length === 1) {
+      throw ApiError.badRequest('Please enter both numbers: the dividend and the divisor.');
+    }
+    result = operands
+      .reduce((a, b) => new Decimal(a).dividedBy(b))
+      .toFixed(2);
+    break;
+  }
+
+  case 'square_root': {
+    if (operands.length !== 1) {
+      throw ApiError.badRequest('Only one operand is allowed. Please try again.');
+    }
+    if (new Decimal(operands[0]).isNegative()) {
+      throw ApiError.badRequest('Square root of negative numbers is not allowed. Please try with positive number.');
+    }
+    result = new Decimal(operands[0]).sqrt().toFixed(2);
+    break;
+  }
+
+  case 'random_string': {
+    result = await generateRandomString(randomParams); // Bloque para await
+    break;
+  }
+
+  default: {
+    throw ApiError.badRequest('Operation not supported');
+  }
+}
   
   const newBalance = currentBalance - cost;
 
