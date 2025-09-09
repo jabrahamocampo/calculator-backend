@@ -1,4 +1,4 @@
-name: Backend CI (microservices)
+name: Backend CI (api-gateway only)
 
 on:
   push:
@@ -11,14 +11,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  service-ci:
-    name: ${{ matrix.service }} - Install → Lint → Test → Build
+  api-gateway-ci:
+    name: api-gateway - Install → Lint → Test → Build
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        service: [ "auth-service", "balance-service", "operation-service", "record-service", "api-gateway" ]
+    defaults:
+      run:
+        working-directory: ./api-gateway
 
     steps:
       - name: Checkout
@@ -29,52 +28,40 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-
-      - name: Restore npm cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-deps-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-deps-
+          cache-dependency-path: ./api-gateway/package-lock.json
 
       - name: Install dependencies
         run: npm ci
-        working-directory: ./${{ matrix.service }}
 
       - name: Lint (if script exists)
         run: |
           if npm run | grep -q "lint"; then
             npm run lint
           else
-            echo "No lint script found in ${{ matrix.service }}, skipping."
+            echo "No lint script found in api-gateway, skipping."
           fi
-        working-directory: ./${{ matrix.service }}
 
       - name: Run tests with coverage
         run: |
           if npm run | grep -q "test:ci"; then
             npm run test:ci
           else
-            # fallback: try jest directly
             npx jest --coverage --runInBand
           fi
         env:
           NODE_ENV: test
-        working-directory: ./${{ matrix.service }}
 
       - name: Upload coverage artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-${{ matrix.service }}
-          path: ./${{ matrix.service }}/coverage
+          name: coverage-api-gateway
+          path: ./api-gateway/coverage
 
       - name: Build (if script exists)
         run: |
           if npm run | grep -q "build"; then
             npm run build
           else
-            echo "No build script in ${{ matrix.service }}, skipping."
+            echo "No build script in api-gateway, skipping."
           fi
-        working-directory: ./${{ matrix.service }}
