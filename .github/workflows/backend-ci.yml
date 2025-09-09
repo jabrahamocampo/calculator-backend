@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [ "api-gateway", "auth-service" ]
+        service: [ "api-gateway", "auth-service" ] # agrega más microservicios aquí en el futuro
 
     defaults:
       run:
@@ -45,6 +45,23 @@ jobs:
           else
             echo "No lint script found in ${{ matrix.service }}, skipping."
           fi
+
+      - name: Set environment variables for tests
+        run: |
+          # Variables comunes para todos los microservicios
+          echo "PORT=4000" >> $GITHUB_ENV
+          echo "JWT_SECRET=ci_secret" >> $GITHUB_ENV
+
+          # Variables específicas por microservicio
+          if [[ "${{ matrix.service }}" == "auth-service" ]]; then
+            echo "DATABASE_URL=postgres://postgres:postgres@localhost:5432/auth_test_db" >> $GITHUB_ENV
+          fi
+
+          if [[ "${{ matrix.service }}" == "api-gateway" ]]; then
+            echo "API_GATEWAY_PORT=4005" >> $GITHUB_ENV
+          fi
+
+          # Aquí se pueden agregar más microservicios y sus variables
 
       - name: Run tests with coverage
         run: |
