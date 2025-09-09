@@ -1,4 +1,4 @@
-name: Backend CI (api-gateway + auth-service + balance-service + operation-service)
+name: Backend CI (api-gateway + auth-service + balance-service + operation-service + record-service)
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [ "api-gateway", "auth-service", "balance-service", "operation-service" ] # agregado operation-service
+        service: [ "api-gateway", "auth-service", "balance-service", "operation-service", "record-service" ]
 
     defaults:
       run:
@@ -69,7 +69,9 @@ jobs:
             echo "DATABASE_URL=postgres://postgres:postgres@localhost:5432/operation_test_db" >> $GITHUB_ENV
           fi
 
-          # Aquí se pueden agregar más microservicios y sus variables
+          if [[ "${{ matrix.service }}" == "record-service" ]]; then
+            echo "DATABASE_URL=postgres://postgres:postgres@localhost:5432/record_test_db" >> $GITHUB_ENV
+          fi
 
       - name: Run tests with coverage
         run: |
