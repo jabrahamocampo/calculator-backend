@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import axios from 'axios';
 import ApiError from '../errors/ApiError.js';
 import Decimal from '../config/decimal.config.js';
+import fetch from 'node-fetch';
 
 dotenv.config();
 
