@@ -48,11 +48,11 @@ jobs:
 
       - name: Set environment variables for tests
         run: |
-          # Variables comunes para todos los microservicios
+          # Microservices variables
           echo "PORT=4000" >> $GITHUB_ENV
           echo "JWT_SECRET=ci_secret" >> $GITHUB_ENV
 
-          # Variables específicas por microservicio
+          # Specific variable per Microservice
           if [[ "${{ matrix.service }}" == "auth-service" ]]; then
             echo "DATABASE_URL=postgres://postgres:postgres@localhost:5432/auth_test_db" >> $GITHUB_ENV
           fi
