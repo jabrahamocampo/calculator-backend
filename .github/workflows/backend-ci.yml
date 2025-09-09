@@ -1,4 +1,4 @@
-name: Backend CI (api-gateway + auth-service)
+name: Backend CI (api-gateway + auth-service + balance-service)
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [ "api-gateway", "auth-service" ] # agrega más microservicios aquí en el futuro
+        service: [ "api-gateway", "auth-service", "balance-service" ] # agregado balance-service
 
     defaults:
       run:
@@ -59,6 +59,10 @@ jobs:
 
           if [[ "${{ matrix.service }}" == "api-gateway" ]]; then
             echo "API_GATEWAY_PORT=4005" >> $GITHUB_ENV
+          fi
+
+          if [[ "${{ matrix.service }}" == "balance-service" ]]; then
+            echo "DATABASE_URL=postgres://postgres:postgres@localhost:5432/balance_test_db" >> $GITHUB_ENV
           fi
 
           # Aquí se pueden agregar más microservicios y sus variables
