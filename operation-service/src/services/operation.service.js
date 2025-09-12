@@ -21,8 +21,6 @@ export async function listOperations() {
 export async function executeOperation(type, operands, userId, token, correlationId, randomParams) {
   if (!type && !operands) throw ApiError.badRequest('Please provide operation and operands.');
 
- console.log(' ####### Estos son los parametros ' + operands.length);
-
   const operation = await Operation.findOne({ where: { type } });
   if (!operation) {
     throw ApiError.notFound('Invalid Operation');
@@ -37,6 +35,8 @@ export async function executeOperation(type, operands, userId, token, correlatio
 
   const cost = operation.cost;
   const currentBalance = balanceRes.data.balance;
+
+  console.log(' Params: ' + cost + currentBalance);
 
   if (currentBalance < cost) {
     throw ApiError.badRequest('Insufficient balance');
