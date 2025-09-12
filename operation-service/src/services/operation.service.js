@@ -21,6 +21,8 @@ export async function listOperations() {
 export async function executeOperation(type, operands, userId, token, correlationId, randomParams) {
   if (!type && !operands) throw ApiError.badRequest('Please provide operation and operands.');
 
+ console.log(' ####### Estos son los parametros ' + operands.length);
+
   const operation = await Operation.findOne({ where: { type } });
   if (!operation) {
     throw ApiError.notFound('Invalid Operation');
@@ -50,6 +52,9 @@ export async function executeOperation(type, operands, userId, token, correlatio
   let result;
   switch (type) {
   case 'addition': {
+    if (operands.length === 1) {
+      throw ApiError.badRequest('Please enter at least two operands separated by a comma.');
+    }
     result = operands
       .reduce((a, b) => new Decimal(a).plus(b), new Decimal(0))
       .toFixed(2);
@@ -57,6 +62,9 @@ export async function executeOperation(type, operands, userId, token, correlatio
   }
 
   case 'subtraction': {
+    if (operands.length === 1) {
+      throw ApiError.badRequest('Please enter at least two operands separated by a comma.');
+    }
     result = operands
       .reduce((a, b) => new Decimal(a).minus(b))
       .toFixed(2);
@@ -64,6 +72,9 @@ export async function executeOperation(type, operands, userId, token, correlatio
   }
 
   case 'multiplication': {
+    if (operands.length === 1) {
+      throw ApiError.badRequest('Please enter at least two operands separated by a comma.');
+    }
     result = operands
       .reduce((a, b) => new Decimal(a).times(b), new Decimal(1))
       .toFixed(2);
@@ -71,12 +82,12 @@ export async function executeOperation(type, operands, userId, token, correlatio
   }
 
   case 'division': {
-    const values = operands.slice(1); // Ahora está dentro del bloque
+    const values = operands.slice(1);
     if (values.some(v => new Decimal(v).isZero())) {
       throw ApiError.badRequest('Cannot divide by zero. Please enter a different divisor.');
     }
     if (operands.length === 1) {
-      throw ApiError.badRequest('Please enter both numbers: the dividend and the divisor.');
+      throw ApiError.badRequest('Please enter both numbers: the dividend and the divisor, separated by a comma.');
     }
     result = operands
       .reduce((a, b) => new Decimal(a).dividedBy(b))
@@ -96,7 +107,7 @@ export async function executeOperation(type, operands, userId, token, correlatio
   }
 
   case 'random_string': {
-    result = await generateRandomString(randomParams); // Bloque para await
+    result = await generateRandomString(randomParams); 
     break;
   }
 
