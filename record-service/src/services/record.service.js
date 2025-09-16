@@ -1,28 +1,12 @@
 import { Op } from 'sequelize';
 import Record from '../models/Record.js';
 import ApiError from '../errors/ApiError.js';
+import moment from "moment-timezone";
+
 
 function formatDateToMMDDYYYY_HHMM(dateInput) {
   if (!dateInput) return null;
-
-  if (dateInput instanceof Date) {
-    const year = dateInput.getFullYear();
-    const month = String(dateInput.getMonth() + 1).padStart(2, '0');
-    const day = String(dateInput.getDate()).padStart(2, '0');
-    const hours = String(dateInput.getHours()).padStart(2, '0');
-    const minutes = String(dateInput.getMinutes()).padStart(2, '0');
-    return `${month}/${day}/${year} ${hours}:${minutes}`;
-  }
-
-  if (typeof dateInput === 'string') {
-    const [datePart, timePart] = dateInput.split(" ");
-    if (!datePart || !timePart) return dateInput; // fallback
-    const [year, month, day] = datePart.split("-");
-    const [hour, minute] = timePart.split(":");
-    return `${month}/${day}/${year} ${hour}:${minute}`;
-  }
-
-  return String(dateInput);
+  return moment(dateInput).local().format("MM/DD/YYYY HH:mm");
 }
 
 
