@@ -1,14 +1,23 @@
 import { Op } from 'sequelize';
 import Record from '../models/Record.js';
 import ApiError from '../errors/ApiError.js';
-import moment from "moment-timezone";
 
+function formatDateToMMDDYYYY_HHMM(dateString) {
+  if (!dateString) return null;
 
-function formatDateToMMDDYYYY_HHMM(dateInput) {
-  if (!dateInput) return null;
-  return moment(dateInput).local().format("MM/DD/YYYY HH:mm");
+  const date = new Date(dateString); 
+  const options = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  };
+
+  const formatted = date.toLocaleString('en-US', options).replace(',', '');
+  return formatted;
 }
-
 
 export async function performOperationForUser({
   operation_type,
