@@ -5,7 +5,7 @@ import moment from "moment-timezone";
 
 function formatDateToMMDDYYYY_HHMM(dateInput) {
   if (!dateInput) return null;
-  return moment(dateInput).local().format("MM/DD/YYYY HH:mm");
+  return moment(dateInput).local().format("MM/DD/YYYY");
 }
 
 export async function performOperationForUser({
