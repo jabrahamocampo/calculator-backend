@@ -1,0 +1,124 @@
+version: "1"
+
+services:
+  - type: web
+    name: calculator-backend-operation-service
+    runtime: node
+    repo: https://github.com/jabrahamocampo/calculator-backend
+    plan: free
+    envVars:
+      - key: LOG_LEVEL
+        sync: false
+      - key: RECORD_SERVICE
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: BALANCE_SERVICE
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: NODE_ENV
+        sync: false
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeployTrigger: commit
+    rootDir: operation-service
+
+  - type: web
+    name: calculator-backend-record-service
+    runtime: node
+    repo: https://github.com/jabrahamocampo/calculator-backend
+    plan: free
+    envVars:
+      - key: LOG_LEVEL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: S3_BUCKET_NAME
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_REGION
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: NODE_ENV
+        sync: false
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeployTrigger: commit
+    rootDir: record-service
+
+  - type: web
+    name: calculator-backend-balance-service
+    runtime: node
+    repo: https://github.com/jabrahamocampo/calculator-backend
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: BALANCE_SERVICE
+        sync: false
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeployTrigger: commit
+    rootDir: balance-service
+
+  - type: web
+    name: calculator-backend-auth-service
+    runtime: node
+    repo: https://github.com/jabrahamocampo/calculator-backend
+    plan: free
+    envVars:
+      - key: LOG_LEVEL
+        sync: false
+      - key: BALANCE_SERVICE
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: NODE_ENV
+        sync: false
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeployTrigger: commit
+    rootDir: auth-service
+
+  - type: web
+    name: calculator-backend-api-gateway
+    runtime: node
+    repo: https://github.com/jabrahamocampo/calculator-backend
+    plan: free
+    envVars:
+      - key: JWT_SECRET
+        sync: false
+      - key: DEV_API_GATEWAY
+        sync: false
+      - key: DEV_APPLICATION
+        sync: false
+      - key: RECORD_SERVICE
+        sync: false
+      - key: PROD_APPLICATION
+        sync: false
+      - key: OPERATION_SERVICE
+        sync: false
+      - key: BALANCE_SERVICE
+        sync: false
+      - key: AUTH_SERVICE
+        sync: false
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeployTrigger: commit
+    rootDir: api-gateway
