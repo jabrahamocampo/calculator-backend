@@ -19,8 +19,13 @@ export async function listOperations() {
 }
 
 export async function executeOperation(type, operands, userId, token, correlationId, randomParams) {
-  if (!type && !operands) throw ApiError.badRequest('Please provide operation and operands.');
-
+ 
+ if (type !== 'random_string'){
+  if (type === '' && operands.length === 0) throw ApiError.badRequest('Please enter operation and operands.');
+  if (type === 'square_root' && operands.length === 0) throw ApiError.badRequest('Please enter one operand.');
+  if (type !== '' && operands.length === 0) throw ApiError.badRequest('Please enter at least two operands, separated by a comma.');
+  if (type === '' && operands.length !== 0) throw ApiError.badRequest('Please enter operation type.');
+ }
   const operation = await Operation.findOne({ where: { type } });
   if (!operation) {
     throw ApiError.notFound('Invalid Operation');
@@ -150,8 +155,18 @@ export async function executeOperation(type, operands, userId, token, correlatio
 }
 
 async function generateRandomString(randomParams) {
-  const url = `https://www.random.org/strings/?num=${randomParams.num}&len=${randomParams.len}&digits=${randomParams.digits}&upperalpha=${randomParams.upperalpha}&loweralpha=${randomParams.loweralpha}&unique${randomParams.unique}&format=plain&rnd=new`;
+  if (randomParams.digits === 'off' && 
+      randomParams.upperalpha === 'off' &&
+      randomParams.loweralpha === 'off') {
+         throw ApiError.badRequest('You need to check at least one option: Include Digits or Letters');
+      }
+  
+  const url = `https://www.random.org/strings/?num=${randomParams.num}&len=${randomParams.len}&digits=${randomParams.digits}&upperalpha=${randomParams.upperalpha}&loweralpha=${randomParams.loweralpha}&unique=${randomParams.unique}&format=plain&rnd=new`;
   const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Random.org error: ${response.statusText}`);
+  }
   const text = await response.text();
   return text.trim().split("\n");
 }
+
