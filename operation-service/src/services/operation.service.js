@@ -26,6 +26,7 @@ export async function executeOperation(type, operands, userId, token, correlatio
   if (type !== '' && operands.length === 0) throw ApiError.badRequest('Please enter at least two operands, separated by a comma.');
   if (type === '' && operands.length !== 0) throw ApiError.badRequest('Please enter operation type.');
  }
+
   const operation = await Operation.findOne({ where: { type } });
   if (!operation) {
     throw ApiError.notFound('Invalid Operation');
